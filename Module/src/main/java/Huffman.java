@@ -48,21 +48,24 @@ public class Huffman {
      * HuffmanNode.comesBefore() as you insert (an "ordered list"), or a
      * PriorityQueue. How you implement this method depends on which you pick.
      */
+
+    // note to gin: make collection into arraylist in createHuffTree
     public static void addNode(ArrayList<HuffmanNode> collection, HuffmanNode node) {
         if (collection.size == 0) {
             collection.array[1] = node;
             collection.size += 1;
         }else{
             int childIdx = collection.size + 1;
-            int parentIdx = (collection.size + 1)/2;
-            while(HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx]) && childIdx > 1) {
+            collection.array[childIdx] = node;
+            collection.size += 1;
+            int parentIdx = (collection.size)/2;
+            while(childIdx > 1 && HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx])) {
                 HuffmanNode parent_temp = collection.array[parentIdx];
                 collection.array[parentIdx] = collection.array[childIdx];
                 collection.array[childIdx] = parent_temp;
 
                 childIdx = parentIdx;
                 parentIdx = childIdx/2;
-                collection.size += 1;
             }
         }
     }
@@ -77,10 +80,58 @@ public class Huffman {
      * with a PriorityQueue, poll() it; for any other collection, find the
      * minimum node and remove it.
      */
-    public static HuffmanNode removeMin(Collection<HuffmanNode> collection) {
-        // TODO: implement
-        return null;
+    public static HuffmanNode removeMin(Collection<HuffmanNode> collection){
+        if(collection == null || collection.isEmpty()) {
+            return null;
+        } else if (collection instanceof PriorityQueue) {
+            PriorityQueue<HuffmanNode> queue = (PriorityQueue<HuffmanNode>) collection;
+            return queue.poll();
+        }else{
+            HuffmanNode min = null;
+            for(HuffmanNode node : collection){
+                if (min == null || HuffmanNode.comesBefore(node, min)){
+                    min = node;
+                }
+            }
+            collection.remove(min);
+            return min;
+        }
     }
+
+
+
+    /**
+     * Removes and returns the smallest HuffmanNode in collection, using
+     * HuffmanNode.comesBefore() (or compareTo(), which relies on it) to
+     * determine "smallest". Returns null if collection is empty.
+     *
+     * This must work for ANY Collection passed in -- not just the one you
+     * use inside createHuffTree(). For example, if you back createHuffTree()
+     * with a PriorityQueue, poll() it; for any other collection, find the
+     * minimum node and remove it.
+     */
+    public static HuffmanNode removeMin_Heap(ArrayList<HuffmanNode> collection) {
+        HuffmanNode min = collection.array[1];
+        int parentIdx = 1;
+        collection.array[parentIdx] = collection.array[collection.size];
+        collection.array[collection.size] = null;
+        collection.size -= 1;
+        while(parentIdx * 2 <= collection.size){
+            int childIdx = parentIdx * 2;
+            if(collection.array[childIdx + 1] != null && HuffmanNode.comesBefore(collection.array[childIdx + 1], collection.array[childIdx])){
+                childIdx = childIdx + 1;
+            }
+            if(HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx])){
+                HuffmanNode parent_temp = collection.array[parentIdx];
+                collection.array[parentIdx] = collection.array[childIdx];
+                collection.array[childIdx] = parent_temp;
+
+                parentIdx = childIdx;
+            } else{
+                break;
+            }
+    }
+
 
     /**
      * Builds a Huffman tree from an array of character frequencies (as
