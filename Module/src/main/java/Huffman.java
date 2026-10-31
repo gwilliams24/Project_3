@@ -34,7 +34,16 @@ public class Huffman {
      */
     public static int[] cntFreq(String filename) throws IOException {
         int[] freq = new int[NUM_CHARS];
-        // TODO: implement
+        try {
+            FileReader fileReader = new FileReader(filename);
+            int i;
+            while ((i = fileReader.read()) != -1) {
+                freq[i] += 1;
+            }
+            fileReader.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         return freq;
     }
 
@@ -69,6 +78,7 @@ public class Huffman {
             }
         }
     }
+
 
     /**
      * Removes and returns the smallest HuffmanNode in collection, using
@@ -116,20 +126,21 @@ public class Huffman {
         collection.array[parentIdx] = collection.array[collection.size];
         collection.array[collection.size] = null;
         collection.size -= 1;
-        while(parentIdx * 2 <= collection.size){
+        while(parentIdx * 2 <= collection.size) {
             int childIdx = parentIdx * 2;
-            if(collection.array[childIdx + 1] != null && HuffmanNode.comesBefore(collection.array[childIdx + 1], collection.array[childIdx])){
+            if (collection.array[childIdx + 1] != null && HuffmanNode.comesBefore(collection.array[childIdx + 1], collection.array[childIdx])) {
                 childIdx = childIdx + 1;
             }
-            if(HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx])){
+            if (HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx])) {
                 HuffmanNode parent_temp = collection.array[parentIdx];
                 collection.array[parentIdx] = collection.array[childIdx];
                 collection.array[childIdx] = parent_temp;
 
                 parentIdx = childIdx;
-            } else{
+            } else {
                 break;
             }
+        }
     }
 
 
@@ -150,8 +161,20 @@ public class Huffman {
      *    character (no combine() call needed).
      */
     public static HuffmanNode createHuffTree(int[] freq) {
-        // TODO: implement
-        return null;
+        HuffmanNode[] array = new HuffmanNode[257];
+        ArrayList<HuffmanNode> lst = new ArrayList<HuffmanNode> (array, 0);
+        for (int i = 0; i < freq.length; i += 1){
+            if (freq[i] > 0){
+                HuffmanNode node = new HuffmanNode(i, freq[i], null, null);
+                addNode(lst, node);
+            }
+        }
+        while (lst.size > 1){
+            HuffmanNode node1 = removeMin(lst);
+            HuffmanNode node2 = removeMin(lst);
+            addNode(lst, HuffmanNode.combine(node1, node2));
+        }
+        return removeMin(lst);
     }
 
     /**
@@ -169,9 +192,23 @@ public class Huffman {
     public static String[] createCode(HuffmanNode root) {
         String[] codes = new String[NUM_CHARS];
         Arrays.fill(codes, "");
-        // TODO: implement
+        pathCodes(root, "", codes);
         return codes;
     }
+
+    public static void pathCodes (HuffmanNode root, String path, String[] codes){
+        if (root == null) {
+            return;
+        }
+        if (root.left() == null && root.right() == null) {
+            codes[root.charAscii()] = path;
+        }
+        pathCodes(root.left(), path + "0", codes);
+        pathCodes(root.right(), path + "1", codes);
+
+        }
+    }
+
 
     /**
      * Given a frequency array (as produced by cntFreq()), returns a
@@ -182,9 +219,16 @@ public class Huffman {
      * Example: for the text "aaabbbbcc" this returns "97 3 98 4 99 2".
      */
     public static String createHeader(int[] freq) {
-        // TODO: implement
-        return "";
-    }
+        StringBuilder header = new StringBuilder();
+        for (int i = 0; i < freq.length; i += 1) {
+            if (freq[i] > 0) {
+                header.append(i).append(" ").append(freq[i]).append(" ");
+            }
+        }
+        int end = header.length() - 1;
+        header.deleteCharAt(end);
+        return header.toString();
+}
 
     /**
      * Reads the input text file inFile and writes to outFile:

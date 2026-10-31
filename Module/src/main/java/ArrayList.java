@@ -20,6 +20,7 @@ public class ArrayList <T> {
                 }
                 return true;
             case null, default:
-                return false;}
+                return false;
+        }
     }
 }
