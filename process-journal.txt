@@ -1,0 +1,7 @@
+
+10/31:
+10:00 AM to 1:00 PM
+- created HuffmanNode, ArrayList
+- Huffman: created cntFreq, addNode*, removeMin*, createHuffTree*,
+            createCode, createHeader, parseHeader, huffmanDecode*
+* Implementation not finalized
