@@ -165,7 +165,7 @@ public class Huffman2 {
      *    header line (e.g. "97 5") and nothing else - no second line of code bits.
      */
     public static void huffmanEncode(String inFile, String outFile) throws IOException {
-        // TODO: implement
+
     }
 
     /**
@@ -177,7 +177,12 @@ public class Huffman2 {
      */
     public static int[] parseHeader(String headerString) {
         int[] freq = new int[NUM_CHARS];
-        // TODO: implement
+        String[] header = headerString.split(" ");
+        for (int i = 0; i < header.length / 2; i += 1) {
+            int ascii = Integer.parseInt(header[i]);
+            int frq = Integer.parseInt(header[i + 1]);
+            freq[ascii] = frq;
+        }
         return freq;
     }
 
@@ -203,5 +208,6 @@ public class Huffman2 {
     public void main() throws IOException {
         System.out.println(cntFreq("file2.txt"));
         System.out.println(createHeader(cntFreq("file2.txt")));
+        System.out.println(parseHeader(createHeader(cntFreq("file2.txt"))));
     }
 }
