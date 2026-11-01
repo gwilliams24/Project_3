@@ -264,7 +264,17 @@ public class Huffman {
         for (int i = 1; i < lines.length; i += 1) {
             string.append(header[i]);
         }
-
+        StringBuilder chr = new StringBuilder();
+        HuffmanNode spot = tree;
+        for (int i = 0; i < string.length(); i += 1) {
+            if (spot.left() == null || spot.right() == null) {
+                
+            }
+            if (string.charAt(i) == 0) {
+                spot = spot.left();
+            } else {
+            }
+        }
         // TODO: Decoding
         /** files need to be in chunks of 8;
          * we can just decode the length of the original string
