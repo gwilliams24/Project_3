@@ -237,7 +237,6 @@ public class Huffman {
             int frequency = Integer.parseInt(header_array[i+1]);
             freq[ascii] = frequency;
         }
-
         return freq;
     }
 
@@ -257,6 +256,19 @@ public class Huffman {
      * so write it out that many times directly.
      */
     public static void huffmanDecode(String encodedFile, String decodeFile) throws IOException {
-        // TODO: implement
+        String[] lines = encodedFile.split("\n");
+        int[] header = parseHeader(lines[0]);
+        HuffmanNode tree = createHuffTree(header);
+        String[] code = createCode(tree);
+        StringBuilder string = new StringBuilder();
+        for (int i = 1; i < lines.length; i += 1) {
+            string.append(header[i]);
+        }
+
+        // TODO: Decoding
+        /** files need to be in chunks of 8;
+         * we can just decode the length of the original string
+         * and then add zeros after */
     }
+
 }
