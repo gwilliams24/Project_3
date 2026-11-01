@@ -23,7 +23,9 @@ import java.util.*;
  */
 public class Huffman {
 
-    /** Number of possible 8-bit character values. */
+    /**
+     * Number of possible 8-bit character values.
+     */
     public static final int NUM_CHARS = 256;
 
     /**
@@ -51,32 +53,27 @@ public class Huffman {
      * Adds node to collection, preserving whatever ordering your chosen
      * implementation of collection relies on to make the minimum element
      * easy to find.
-     *
+     * <p>
      * You choose what kind of Collection to pass in when you call this
      * from createHuffTree(). For example, an ArrayList kept sorted by
      * HuffmanNode.comesBefore() as you insert (an "ordered list"), or a
      * PriorityQueue. How you implement this method depends on which you pick.
      */
-
-    // note to gin: make collection into arraylist in createHuffTree
-    public static void addNode(ArrayList<HuffmanNode> collection, HuffmanNode node) {
-        if (collection.size == 0) {
-            collection.array[1] = node;
-            collection.size += 1;
-        }else{
-            int childIdx = collection.size + 1;
-            collection.array[childIdx] = node;
-            collection.size += 1;
-            int parentIdx = (collection.size)/2;
-            while(childIdx > 1 && HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx])) {
-                HuffmanNode parent_temp = collection.array[parentIdx];
-                collection.array[parentIdx] = collection.array[childIdx];
-                collection.array[childIdx] = parent_temp;
-
-                childIdx = parentIdx;
-                parentIdx = childIdx/2;
+    public static void addNode(Collection<HuffmanNode> collection, HuffmanNode node) {
+        Collection<HuffmanNode> lst = new ArrayList<>();
+        boolean added = false;
+        for (HuffmanNode current_node : collection) {
+            if (!added && HuffmanNode.comesBefore(node, current_node)) {
+                lst.add(node);
+                added = true;
             }
+            lst.add(current_node);
         }
+        if (!added) {
+            lst.add(node);
+        }
+        collection.clear();
+        collection.addAll(lst);
     }
 
 
@@ -84,22 +81,22 @@ public class Huffman {
      * Removes and returns the smallest HuffmanNode in collection, using
      * HuffmanNode.comesBefore() (or compareTo(), which relies on it) to
      * determine "smallest". Returns null if collection is empty.
-     *
+     * <p>
      * This must work for ANY Collection passed in -- not just the one you
      * use inside createHuffTree(). For example, if you back createHuffTree()
      * with a PriorityQueue, poll() it; for any other collection, find the
      * minimum node and remove it.
      */
-    public static HuffmanNode removeMin(Collection<HuffmanNode> collection){
-        if(collection == null || collection.isEmpty()) {
+    public static HuffmanNode removeMin(Collection<HuffmanNode> collection) {
+        if (collection == null || collection.isEmpty()) {
             return null;
         } else if (collection instanceof PriorityQueue) {
             PriorityQueue<HuffmanNode> queue = (PriorityQueue<HuffmanNode>) collection;
             return queue.poll();
-        }else{
+        } else {
             HuffmanNode min = null;
-            for(HuffmanNode node : collection){
-                if (min == null || HuffmanNode.comesBefore(node, min)){
+            for (HuffmanNode node : collection) {
+                if (min == null || HuffmanNode.comesBefore(node, min)) {
                     min = node;
                 }
             }
@@ -109,67 +106,31 @@ public class Huffman {
     }
 
 
-
-    /**
-     * Removes and returns the smallest HuffmanNode in collection, using
-     * HuffmanNode.comesBefore() (or compareTo(), which relies on it) to
-     * determine "smallest". Returns null if collection is empty.
-     *
-     * This must work for ANY Collection passed in -- not just the one you
-     * use inside createHuffTree(). For example, if you back createHuffTree()
-     * with a PriorityQueue, poll() it; for any other collection, find the
-     * minimum node and remove it.
-     */
-    public static HuffmanNode removeMin_Heap(ArrayList<HuffmanNode> collection) {
-        HuffmanNode min = collection.array[1];
-        int parentIdx = 1;
-        collection.array[parentIdx] = collection.array[collection.size];
-        collection.array[collection.size] = null;
-        collection.size -= 1;
-        while(parentIdx * 2 <= collection.size) {
-            int childIdx = parentIdx * 2;
-            if (collection.array[childIdx + 1] != null && HuffmanNode.comesBefore(collection.array[childIdx + 1], collection.array[childIdx])) {
-                childIdx = childIdx + 1;
-            }
-            if (HuffmanNode.comesBefore(collection.array[childIdx], collection.array[parentIdx])) {
-                HuffmanNode parent_temp = collection.array[parentIdx];
-                collection.array[parentIdx] = collection.array[childIdx];
-                collection.array[childIdx] = parent_temp;
-
-                parentIdx = childIdx;
-            } else {
-                break;
-            }
-        }
-    }
-
-
     /**
      * Builds a Huffman tree from an array of character frequencies (as
      * produced by cntFreq()) and returns the root HuffmanNode of the tree.
-     *
+     * <p>
      * Use addNode()/removeMin() above to manage the collection of
      * not-yet-combined nodes as you build the tree -- pick whichever
      * concrete Collection type you want to back them with (e.g. a sorted
      * ArrayList, or a PriorityQueue). The rest of this method, and the
      * resulting tree, should not depend on which one you chose.
-     *
+     * <p>
      * Special cases:
-     *  - If freq contains no non-zero counts (empty input file), return null
-     *  - If freq contains exactly one non-zero count (input file has only
-     *    one unique character), return a single leaf HuffmanNode for that
-     *    character (no combine() call needed).
+     * - If freq contains no non-zero counts (empty input file), return null
+     * - If freq contains exactly one non-zero count (input file has only
+     * one unique character), return a single leaf HuffmanNode for that
+     * character (no combine() call needed).
      */
     public static HuffmanNode createHuffTree(int[] freq) {
-        HuffmanNode[] array = new HuffmanNode[257];
-        ArrayList<HuffmanNode> lst = new ArrayList<HuffmanNode> (array, 0);
-        for (int i = 0; i < freq.length; i += 1){
-            if (freq[i] > 0){
+        Collection<HuffmanNode> lst = new ArrayList<>();
+        for (int i = 0; i < freq.length; i += 1) {
+            if (freq[i] > 0) {
                 HuffmanNode node = new HuffmanNode(i, freq[i], null, null);
                 addNode(lst, node);
             }
         }
-        while (lst.size > 1){
+        while (lst.size() > 1) {
             HuffmanNode node1 = removeMin(lst);
             HuffmanNode node2 = removeMin(lst);
             addNode(lst, HuffmanNode.combine(node1, node2));
@@ -181,7 +142,7 @@ public class Huffman {
      * Traverses the Huffman tree rooted at root and builds the Huffman
      * code for every character that appears in it. Going left appends
      * '0' to the code, going right appends '1'.
-     *
+     * <p>
      * Returns a String array of size NUM_CHARS, indexed by ASCII value.
      * Characters that do not appear in the tree have an empty string ""
      * at their index. The same is true of the lone character in a
@@ -196,18 +157,18 @@ public class Huffman {
         return codes;
     }
 
-    public static void pathCodes (HuffmanNode root, String path, String[] codes){
+    public static String[] pathCodes(HuffmanNode root, String path, String[] codes) {
         if (root == null) {
-            return;
+            return null;
         }
         if (root.left() == null && root.right() == null) {
             codes[root.charAscii()] = path;
         }
         pathCodes(root.left(), path + "0", codes);
         pathCodes(root.right(), path + "1", codes);
-
-        }
+        return codes;
     }
+
 
 
     /**
@@ -228,7 +189,8 @@ public class Huffman {
         int end = header.length() - 1;
         header.deleteCharAt(end);
         return header.toString();
-}
+    }
+
 
     /**
      * Reads the input text file inFile and writes to outFile:
@@ -244,7 +206,17 @@ public class Huffman {
      *    header line (e.g. "97 5") and nothing else - no second line of code bits.
      */
     public static void huffmanEncode(String inFile, String outFile) throws IOException {
-        // TODO: implement
+        int[] freq_table = cntFreq(inFile);
+        HuffmanNode root = createHuffTree(freq_table);
+        if (root == null){
+            // write an empty file
+        }
+        String [] codes = createCode(root);
+        String header = createHeader(freq_table);
+        outFile = header + "\n" + codes;
+
+
+
     }
 
     /**
@@ -256,7 +228,16 @@ public class Huffman {
      */
     public static int[] parseHeader(String headerString) {
         int[] freq = new int[NUM_CHARS];
-        // TODO: implement
+        if (headerString == null){
+            return freq;
+        }
+        String[] header_array = headerString.split(" ");
+        for (int i = 0; i < header_array.length; i += 2){
+            int ascii = Integer.parseInt(header_array[i]);
+            int frequency = Integer.parseInt(header_array[i+1]);
+            freq[ascii] = frequency;
+        }
+
         return freq;
     }
 
