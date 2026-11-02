@@ -210,14 +210,22 @@ public class Huffman {
      *    header line (e.g. "97 5") and nothing else - no second line of code bits.
      */
     public static void huffmanEncode(String inFile, String outFile) throws IOException {
-        int[] freq_table = cntFreq(inFile);
+        Path path = Path.of(inFile);
+        String unCoded = Files.readString(path);
+        int[] freq_table = cntFreq(unCoded);
         HuffmanNode root = createHuffTree(freq_table);
         if (root == null){
             // write an empty file
         }
         String [] codes = createCode(root);
         String header = createHeader(freq_table);
-        outFile = header + "\n" + codes;
+        FileWriter file = new FileWriter(outFile);
+        StringBuilder code = new StringBuilder();
+        code.append(header + "\n");
+        for (int i = 0; i < codes.length; i += 1){
+
+        }
+
 
     }
 
@@ -273,7 +281,7 @@ public class Huffman {
 
         StringBuilder code = new StringBuilder(); // decoding
         HuffmanNode spot = tree;
-        for (int i = 0; i < string.length(); i += 1) {
+        for (int i = 0; i < string.length() - extra; i += 1) {
             if (spot.left() == null || spot.right() == null) {
                 try {
                     String chr = "";
