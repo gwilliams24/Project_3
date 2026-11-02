@@ -188,8 +188,10 @@ public class Huffman {
                 header.append(i).append(" ").append(freq[i]).append(" ");
             }
         }
-        int end = header.length() - 1;
-        header.deleteCharAt(end);
+        if (header.length() > 0) {
+            int end = header.length() - 1;
+            header.deleteCharAt(end);
+        }
         return header.toString();
     }
 
@@ -216,8 +218,6 @@ public class Huffman {
         String [] codes = createCode(root);
         String header = createHeader(freq_table);
         outFile = header + "\n" + codes;
-
-
 
     }
 
@@ -278,27 +278,27 @@ public class Huffman {
                 try {
                     String chr = "";
                     for (i = 0; i < codes.length; i += 1) {
-                       if (code.equals(codes[i])) {
-                           chr = String.valueOf((char) i);
-                       }
+                        if (code.equals(codes[i])) {
+                            chr = String.valueOf((char) i);
+                        }
                     }
                     file.write(chr);
                     code = new StringBuilder();
                 } catch (IOException e) {
                     System.out.println("An error occurred: " + e.getMessage());
+                }
+                if (string.charAt(i) == 0) {
+                    spot = spot.left();
+                    code.append(0);
+                } else {
+                    spot = spot.right();
+                    code.append(1);
+                }
             }
-            if (string.charAt(i) == 0) {
-                spot = spot.left();
-                code.append(0);
-            } else {
-                spot = spot.right();
-                code.append(1);
-            }
+            // TODO: Decoding
+            /** files need to be in chunks of 8;
+             * we can just decode the length of the original string
+             * and then add zeros after */
         }
-        // TODO: Decoding
-        /** files need to be in chunks of 8;
-         * we can just decode the length of the original string
-         * and then add zeros after */
     }
-
 }
