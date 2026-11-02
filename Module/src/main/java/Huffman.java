@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -256,23 +258,41 @@ public class Huffman {
      * so write it out that many times directly.
      */
     public static void huffmanDecode(String encodedFile, String decodeFile) throws IOException {
-        String[] lines = encodedFile.split("\n");
-        int[] header = parseHeader(lines[0]);
+        Path path = Path.of(encodedFile);
+        String encoded = Files.readString(path);
+        String[] lines = encoded.split("\n"); // breaks up header, lines
+
+        int[] header = parseHeader(lines[0]); // following lines create the codes
         HuffmanNode tree = createHuffTree(header);
-        String[] code = createCode(tree);
-        StringBuilder string = new StringBuilder();
-        for (int i = 1; i < lines.length; i += 1) {
-            string.append(header[i]);
+        String[] codes = createCode(tree);
+        StringBuilder string = new StringBuilder(); // string that is being read
+        FileWriter file = new FileWriter(decodeFile); // file being written to
+        for (int i = 1; i < lines.length; i += 1) { // excludes header, puts rest of file back together
+            string.append(lines[i]);
         }
-        StringBuilder chr = new StringBuilder();
+
+        StringBuilder code = new StringBuilder(); // decoding
         HuffmanNode spot = tree;
         for (int i = 0; i < string.length(); i += 1) {
             if (spot.left() == null || spot.right() == null) {
-                
+                try {
+                    String chr = "";
+                    for (i = 0; i < codes.length; i += 1) {
+                       if (code.equals(codes[i])) {
+                           chr = String.valueOf((char) i);
+                       }
+                    }
+                    file.write(chr);
+                    code = new StringBuilder();
+                } catch (IOException e) {
+                    System.out.println("An error occurred: " + e.getMessage());
             }
             if (string.charAt(i) == 0) {
                 spot = spot.left();
+                code.append(0);
             } else {
+                spot = spot.right();
+                code.append(1);
             }
         }
         // TODO: Decoding
