@@ -1,0 +1,21 @@
+Process Journal - Gin and Nelle:
+
+Day 1: Friday, October 30st (4:30-6:00 pm)
+- created comesBefore and combine methods for HuffmanNode
+- worked on the addNode and removeMin methods
+
+Day 2: Saturday, October 31st (10:30-2:00 pm)
+- finished addNode and removeMin (after doing to wrong origianlly)
+- created countFreq
+- created createHuffTree
+- worked on createCodes
+
+Day 3: Sunday, November 1 (12:00-2:30 pm)
+- worked on create header
+- worked on decoding file
+- started encode
+- made parse header
+
+Day 4: Monday, November 2 (12:00-1:00 pm)
+- met up to discuss game plan for the rest of the week (when we would meet and goals for those meetings)
+- worked on encode method
